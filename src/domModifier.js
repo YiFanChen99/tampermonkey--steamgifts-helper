@@ -60,6 +60,41 @@ class HeaderModifier {
     }
 
     /**
+     * Match by game name.
+     * @private
+     * @param {Array} games
+     * @param {string} rawName Maybe with extra 'xxx edition'.
+     * @returns {Array} Only one game on exact match. Or all partial matches.
+     */
+    matchGames(games, rawName) {
+        const nameWithoutEdition = rawName.replace(/[\s:\-]+\w+\s+edition$/i, '').trim();
+
+        const candidates = games.filter((game) => game.B.includes(nameWithoutEdition));
+        if (!candidates.length) {
+            return candidates;
+        }
+
+        const exactMatches = candidates.filter(game => {
+            if (game.B === rawName) { return true; }
+            return game.B.split('/').some(part => {
+                return part.trim() === rawName;
+            });
+        });
+        if (exactMatches.length) {
+            return exactMatches;
+        }
+
+        const exactMatchesWithoutEdition = candidates.filter(game => {
+            if (game.B === nameWithoutEdition) { return true; }
+            return game.B.split('/').some(part => {
+                return part.trim() === nameWithoutEdition;
+            });
+        });
+        return exactMatchesWithoutEdition.length ? exactMatchesWithoutEdition : candidates;
+    }
+
+    /**
+     * Match header name with sheet data and modify DOM
      * @private
      * @param {HTMLElement} headerElement
      * @returns {boolean} Whether modified successfully
@@ -68,20 +103,10 @@ class HeaderModifier {
         if (!headerElement) return false;
 
         const name = headerElement.innerText.replace(/(\.{3})$/, '');
-        let games = this.sheetData.games.filter((game) => (game.B.includes(name)));
+        const games = this.matchGames(this.sheetData.games, name);
 
         if (!games.length) {
             return false;
-        }
-
-        const exactMatches = games.filter(game => {
-            if (game.B === name) { return true; }
-            return game.B.split('/').some(part => {
-                return part.trim() === name;
-            });
-        });
-        if (exactMatches.length) {
-            games = exactMatches;
         }
 
         const want = HeaderDisplayFormatter.toWant(games);
