@@ -31,6 +31,30 @@ class HeaderDisplayFormatter {
 class HeaderModifier {
     constructor(sheetData) {
         this.sheetData = sheetData;
+        /**
+         * Precomputed `sheetData.games`
+         */
+        this.games = sheetData.games.map(game => ({
+            ...game,
+            name: HeaderModifier.normalize(game.B),
+            subNames: game.B
+                .split('/')
+                .map(part => HeaderModifier.normalize(part))
+                .filter(Boolean),
+        }));
+    }
+
+    /**
+     * Normalize a name for comparison: case, trademark symbols, whitespace.
+     * @private
+     * @returns {string}
+     */
+    static normalize(name) {
+        return name
+            .replace(/[™®©]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
     }
 
     /**
@@ -67,28 +91,27 @@ class HeaderModifier {
      * @returns {Array} Only one game on exact match. Or all partial matches.
      */
     matchGames(games, rawName) {
-        const nameWithoutEdition = rawName.replace(/[\s:\-]+\w+\s+edition$/i, '').trim();
+        const name = HeaderModifier.normalize(rawName);
+        const nameWithoutEdition = HeaderModifier.normalize(
+            rawName.replace(/[\s:\-]+\w+\s+edition$/i, '')
+        );
 
-        const candidates = games.filter((game) => game.B.includes(nameWithoutEdition));
+        const candidates = games.filter((game) => game.name.includes(nameWithoutEdition));
         if (!candidates.length) {
             return candidates;
         }
 
         const exactMatches = candidates.filter(game => {
-            if (game.B === rawName) { return true; }
-            return game.B.split('/').some(part => {
-                return part.trim() === rawName;
-            });
+            if (game.name === name) { return true; }
+            return game.subNames.includes(name);
         });
         if (exactMatches.length) {
             return exactMatches;
         }
 
         const exactMatchesWithoutEdition = candidates.filter(game => {
-            if (game.B === nameWithoutEdition) { return true; }
-            return game.B.split('/').some(part => {
-                return part.trim() === nameWithoutEdition;
-            });
+            if (game.name === nameWithoutEdition) { return true; }
+            return game.subNames.includes(nameWithoutEdition);
         });
         return exactMatchesWithoutEdition.length ? exactMatchesWithoutEdition : candidates;
     }
@@ -103,7 +126,7 @@ class HeaderModifier {
         if (!headerElement) return false;
 
         const name = headerElement.innerText.replace(/(\.{3})$/, '');
-        const games = this.matchGames(this.sheetData.games, name);
+        const games = this.matchGames(this.games, name);
 
         if (!games.length) {
             return false;
