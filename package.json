@@ -1,0 +1,19 @@
+{
+  "name": "tampermonkey--steamgifts-helper",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Fetch games from Google Sheet via App Script",
+  "author": "YiFanChen99",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "@types/tampermonkey": "^5.0.4",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}
