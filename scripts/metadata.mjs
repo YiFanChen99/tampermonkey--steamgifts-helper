@@ -9,7 +9,7 @@ const pagesBaseUrl = 'https://yifanchen99.github.io/tampermonkey--steamgifts-hel
 
 /** Repeated keys (`match`, `connect`) are expressed as arrays. */
 export const metadata = {
-    name: 'Steamgifts-helper',
+    name: 'Ekko Steamgifts Helper',
     namespace: 'https://github.com/YiFanChen99/tampermonkey--steamgifts-helper',
     version: '1.4.0',
     description: 'Fetch games from Google Sheet via App Script',
