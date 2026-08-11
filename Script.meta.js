@@ -1,13 +1,14 @@
 // ==UserScript==
-// @name         Steamgifts-helper
+// @name         Ekko Steamgifts Helper
 // @namespace    https://github.com/YiFanChen99/tampermonkey--steamgifts-helper
-// @version      1.3.5
+// @version      1.4.0
 // @description  Fetch games from Google Sheet via App Script
 // @author       YiFanChen99
 // @match        *://www.steamgifts.com/giveaways/search*
 // @match        *://www.steamgifts.com/giveaway/*
 // @grant        GM_xmlhttpRequest
-// @icon         https://raw.githubusercontent.com/YiFanChen99/tampermonkey--steamgifts-helper/main/favicon.ico
-// @downloadURL  https://raw.githubusercontent.com/YiFanChen99/tampermonkey--steamgifts-helper/main/Script.user.js
-// @updateURL    https://raw.githubusercontent.com/YiFanChen99/tampermonkey--steamgifts-helper/main/Script.meta.js
+// @connect      script.google.com
+// @connect      www.steamgifts.com
+// @icon         https://yifanchen99.github.io/tampermonkey--steamgifts-helper/favicon.ico
+// @downloadURL  https://yifanchen99.github.io/tampermonkey--steamgifts-helper/Script.user.js
 // ==/UserScript==
