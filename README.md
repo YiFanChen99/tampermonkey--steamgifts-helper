@@ -19,8 +19,6 @@ npm run check      # typecheck + build
 
 metadata block 的唯一來源是 `scripts/metadata.mjs`，build 時產生。省略 `@updateURL`，讓 Tampermonkey 直接用 `@downloadURL` 做更新檢查，所以不需要額外維護 `.meta.js`。
 
-> `Script.user.js`（repo 根目錄）與 `src/*.js` 是舊交付路徑的遺留檔案，已凍結不再更新，僅供尚未更新到新網址的既有安裝使用。
-
 ## 實作說明
 
 `src/main.ts` 是進入點，依網址判斷是列表頁（`/giveaways/search`）或單一頁（`/giveaway/`），再呼叫對應的 modifier。
