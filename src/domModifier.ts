@@ -98,7 +98,7 @@ export class HeaderModifier {
     private matchGames(games: PreparedGame[], rawName: string): PreparedGame[] {
         const name = HeaderModifier.normalize(rawName);
         const nameWithoutEdition = HeaderModifier.normalize(
-            rawName.replace(/[\s:\-]+\w+\s+edition$/i, '')
+            rawName.replace(/[\s:-]+\w+\s+edition$/i, '')
         );
 
         const candidates = games.filter((game) => game.name.includes(nameWithoutEdition));
@@ -173,7 +173,7 @@ class Cache<T> {
         try {
             const raw = localStorage.getItem(this.key);
             this.cache = raw ? (JSON.parse(raw) as Record<string, CacheEntry<T>>) : {};
-        } catch (e) {
+        } catch {
             this.cache = {};
         }
     }
@@ -252,7 +252,7 @@ export class RegionModifier {
      * @returns Whether modified successfully
      */
     private async modify(regionElement: HTMLAnchorElement | null): Promise<boolean> {
-        if (!regionElement || !regionElement.href) {
+        if (!regionElement?.href) {
             return false;
         }
 
@@ -260,8 +260,8 @@ export class RegionModifier {
             const counts = await this.fetchRegionCounts(regionElement.href);
             regionElement.appendChild(document.createTextNode(`${counts}`));
             return true;
-        } catch (msg) {
-            console.error(msg);
+        } catch (error) {
+            console.error(error);
             return false;
         }
     }
@@ -278,7 +278,7 @@ export class RegionModifier {
                 url: url,
                 onload: (response) => {
                     if (response.status !== 200) {
-                        return reject(`Failed to fetch ${url}: ${response.status}`);
+                        return reject(new Error(`Failed to fetch ${url}: ${response.status}`));
                     }
 
                     const parser = new DOMParser();
@@ -286,7 +286,7 @@ export class RegionModifier {
                     const resultsSelector = '.pagination__results';
                     const text = doc.querySelector<HTMLElement>(resultsSelector)?.innerText;
                     if (!text) {
-                        return reject(`Results text not found in ${url}`);
+                        return reject(new Error(`Results text not found in ${url}`));
                     }
                     // Keep parse failures inside the promise: an escaping throw would
                     // leave it forever pending, hanging every `await` down the line.
@@ -294,13 +294,13 @@ export class RegionModifier {
                     try {
                         count = this.parseRegionCounts(text);
                     } catch (error) {
-                        return reject(error);
+                        return reject(error instanceof Error ? error : new Error(String(error)));
                     }
                     this.cache.set(url, count);
                     resolve(count);
                 },
                 onerror: (error) => {
-                    return reject(`Failed to fetch ${url}: ${error.error}`);
+                    return reject(new Error(`Failed to fetch ${url}: ${error.error}`));
                 },
             });
         });
@@ -314,10 +314,10 @@ export class RegionModifier {
             return 0;
         }
 
-        const matched = text.match(/(?:\d+) to (?:\d+) of (\d+) result/);
+        const matched = /(?:\d+) to (?:\d+) of (\d+) result/.exec(text);
         if (!matched) {
             throw new Error(`Unexpected results text format: ${text}`);
         }
-        return parseInt(matched[1]!, 10);
+        return parseInt(matched[1], 10);
     }
 }

@@ -12,7 +12,8 @@
 
 ```sh
 npm install
-npm run check      # typecheck + build
+npm run check      # tsc --noEmit + ESLint
+npm run build      # 產出 dist/Script.user.js
 ```
 
 `dist/` 不進版控。push 到 `main` 後由 `.github/workflows/deploy.yml` 建置並發佈到 GitHub Pages，安裝網址即上方那一個。

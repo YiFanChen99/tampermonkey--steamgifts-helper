@@ -8,12 +8,16 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run build"
+    "lint": "eslint .",
+    "check": "tsc --noEmit && npm run lint"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/tampermonkey": "^5.0.4",
     "esbuild": "^0.25.0",
-    "typescript": "^5.7.0"
+    "eslint": "^10.8.1",
+    "globals": "^17.10.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.67.0"
   }
 }
